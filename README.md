@@ -7,6 +7,48 @@ A high-performance, RESTful API for an E-commerce platform built with **FastAPI*
 
 ---
 
+## 📋 Database Design Details
+
+This section outlines the schema design, relationships, and constraints used to satisfy the assignment's RDBMS and ORM requirements.
+
+### 1. Entity-Relationship (ER) Overview
+The database consists of two primary entities with a **One-to-Many** relationship.
+
+*   **Entity A:** `Category` (The "One" side)
+*   **Entity B:** `Product` (The "Many" side)
+*   **Logic:** A single Category can contain multiple Products, but a Product can belong to only one Category.
+
+### 2. Detailed Schema Definition
+
+#### Table: `categories`
+This table stores the high-level classifications for products.
+
+| Column Name | Data Type | Constraints | Description |
+| :--- | :--- | :--- | :--- |
+| `id` | `Integer` | **PRIMARY KEY**, Auto-Increment | Unique identifier for the category. |
+| `name` | `String` (VARCHAR) | **UNIQUE**, **INDEXED**, Not Null | The name of the category (e.g., "Electronics"). Cannot be duplicated. |
+
+#### Table: `products`
+This table stores the individual items available for sale.
+
+| Column Name | Data Type | Constraints | Description |
+| :--- | :--- | :--- | :--- |
+| `id` | `Integer` | **PRIMARY KEY**, Auto-Increment | Unique identifier for the product. |
+| `name` | `String` (VARCHAR) | **INDEXED**, Not Null | The product name. Indexed for faster search performance. |
+| `price` | `Float` | Not Null | The price of the product. |
+| `category_id` | `Integer` | **FOREIGN KEY**, Not Null | Links to `categories(id)`. Enforces that a product must have a valid category. |
+
+### 3. Relationships & Integrity
+
+*   **Foreign Key Constraint:**
+    *   The `category_id` column in the `products` table references the `id` column in the `categories` table.
+    *   **Impact:** You cannot create a product with a `category_id` that does not exist in the categories table (Referential Integrity).
+
+*   **Data Retrieval Strategy:**
+    *   When fetching a single product via `GET /api/products/{id}`, the API performs a JOIN operation (via SQLAlchemy ORM relationship) to return the product details **embedded with** the full category object.
+
+---
+
 ## ✨ Features
 
 | Feature | Description | Status |
@@ -18,29 +60,6 @@ A high-performance, RESTful API for an E-commerce platform built with **FastAPI*
 | **Data Validation** | Pydantic schemas for request/response validation. | ✅ Completed |
 | **Security** | API Key protection for Write operations (POST, PUT, DELETE). | ✅ **Bonus** |
 | **Throttling** | Rate limiting (20 req/min for Read, 5 req/min for Write). | ✅ **Bonus** |
-
----
-
-## 🗄️ Database Design
-
-As per the requirements, the database uses an RDBMS structure with a **One-to-Many** relationship.
-
-### Tables
-
-1.  **categories**
-    *   `id` (Integer, PK, Auto-increment)
-    *   `name` (String, Unique)
-
-2.  **products**
-    *   `id` (Integer, PK, Auto-increment)
-    *   `name` (String)
-    *   `price` (Float)
-    *   `category_id` (Integer, Foreign Key $\to$ `categories.id`)
-
-### Relationship Logic
-*   One **Category** can contain multiple **Products**.
-*   Each **Product** must belong to exactly one **Category**.
-*   **API Response:** Fetching a product automatically includes the full details of its associated category.
 
 ---
 
@@ -67,8 +86,6 @@ As per the requirements, the database uses an RDBMS structure with a **One-to-Ma
     ```bash
     pip install -r requirements.txt
     ```
-
-    *(Required packages: fastapi, uvicorn, sqlalchemy, pydantic, slowapi, etc.)*
 
 ---
 
@@ -109,7 +126,7 @@ uvicorn app.main:app --reload
 2.  Click the **🔒 Authorize** button at the top right.
 3.  Enter the API Key:
     ```text
-    12345
+    my-secret-token
     ```
 4.  Click "Authorize" and close. You can now execute Write operations.
 
@@ -165,3 +182,6 @@ To test: Execute a `POST` request rapidly. After the 5th request in a minute, yo
 
 ## 👨‍💻 Author
 Built for Machine Test Submission.
+```
+
+This update provides the formal "Database Design Details" section requested in your submission requirements, explicitly listing columns, types, and constraints.
