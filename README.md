@@ -48,7 +48,7 @@ As per the requirements, the database uses an RDBMS structure with a **One-to-Ma
 
 1.  **Clone the Repository**
     ```bash
-    git clone <your-repository-link>
+    git clone https://github.com/Prathameshsci369/-E-Commerce-REST-API-FastAPI-Machine-Test-.git
     cd fastapi_ecommerce
     ```
 
